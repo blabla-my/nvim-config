@@ -1,11 +1,15 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 250
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
+vim.opt.termguicolors = true
 
 local uv = vim.uv or vim.loop
 
@@ -69,9 +73,11 @@ do
     end
     ensure_plugin("https://github.com/rafamadriz/friendly-snippets.git", pack_start .. "/friendly-snippets")
     ensure_plugin("https://github.com/nvim-treesitter/nvim-treesitter.git", pack_start .. "/nvim-treesitter")
+    ensure_plugin("https://github.com/nvim-tree/nvim-tree.lua.git", pack_start .. "/nvim-tree.lua")
     pcall(vim.cmd, "packadd blink.cmp")
     pcall(vim.cmd, "packadd friendly-snippets")
     pcall(vim.cmd, "packadd nvim-treesitter")
+    pcall(vim.cmd, "packadd nvim-tree.lua")
   end
 end
 
@@ -87,6 +93,31 @@ do
       sources = { default = { "lsp", "path", "snippets", "buffer" } },
       fuzzy = { implementation = "prefer_rust" },
     })
+  end
+end
+
+do
+  local ok, tree = pcall(require, "nvim-tree")
+  if ok then
+    tree.setup({
+      renderer = {
+        icons = {
+          show = {
+            file = false,
+            folder = false,
+            folder_arrow = false,
+            git = false,
+            modified = false,
+            diagnostics = false,
+            bookmarks = false,
+          },
+        },
+      },
+      git = { enable = false },
+      view = { width = 30 },
+    })
+    vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<cr>", { desc = "Explorer" })
+    vim.keymap.set("n", "<leader>E", "<cmd>NvimTreeFindFile<cr>", { desc = "Explorer (file)" })
   end
 end
 
